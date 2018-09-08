@@ -37,3 +37,10 @@ SELECT * FROM users WHERE name LIKE '%bar%';
 -- better way:
 SELECT * FROM users WHERE name LIKE 'bar%';
 ```
+5. Investigate slow querys
+- Keep an eye on indexes.
+- Avoid: non-indexed full table scans, non-indexed joins.
+- Check and optimize queries.
+- Caching could be really powerfull (especially for MySql).
+- Sometimes it is better to merge data .
+- Denormalize data by creating new tables. Sometimes it may significantly imrpove working speed (don't forget about triggers on parent tables, so that data consistency will be saved. Double check on using this one.
