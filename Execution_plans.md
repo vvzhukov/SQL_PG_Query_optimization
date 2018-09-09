@@ -72,8 +72,7 @@ Bitmap Heap Scan on words (cost=3.37..11.54 rows=5 width=3)     Recheck Cond: (f
  ```
 First, the `iwords_fletter` index is used to build a bitmap. The Bitmap Scan then creates a short list of disk pages. The pages are accessed and the scan takes each applicable row in every one of them. The operation is identified by the Recheck Cond clause in the execution plan.
 # Join methods
-* Nested Loop
-Nested Loop With Inner Sequential Scan. For each element from the first table it checks every row of the second table using the Sequential Scan method. If the join condition is fulfilled, the row is returned. The method can be very costly and is most often used for small tables.
+* Nested Loop with Inner Sequential Scan. For each element from the first table it checks every row of the second table using the Sequential Scan method. If the join condition is fulfilled, the row is returned. The method can be very costly and is most often used for small tables.
 ```sql
 XPLAIN SELECT t2.name FROM t1 JOIN t2 ON (t1.id = t2.id) WHERE t1.id = 125;
                         QUERY PLAN
@@ -99,8 +98,7 @@ Index Cond: (id = 125::oid)
 Index Cond: (t2.id = 125::oid)
 ```
 The tight restriction has made the optimizer choose the Nested Loop join method. Because suitable indices were present, the optimizer decided to apply the Inner Index Scan version.
-* Hash Join
-The Hash Join algorithm starts by preparing a hash table of the smaller table on the join key. Each row is stored in the hash table at the location specified by a deterministic hash function. Next, the larger table is scanned, probing the hash table to find the rows which meet the join condition.
+* Hash Join algorithm starts by preparing a hash table of the smaller table on the join key. Each row is stored in the hash table at the location specified by a deterministic hash function. Next, the larger table is scanned, probing the hash table to find the rows which meet the join condition.
 ```sql
 EXPLAIN SELECT t2.name FROM t1 JOIN t2 ON (t1.id = t2.id) WHERE t2.id > 28;
                         QUERY PLAN
@@ -114,8 +112,7 @@ Hash Join (cost=42.78..812.82 rows=16532 width=32)
 Here, the Sequential Scan on t2 works as the input for the Hash Node, which builds the hash table. The table is then returned to Hash Join and the rows from the outer table are read to look for matches on the Hash Condition.
 
 This is a very efficient algorithm, but it requires enough main memory to keep the whole hash table. Note that the result order might differ from the initial sorting.
-* Merge Join
-The MergeJoin is similar to the MergeSort algorithm. Before the tables are joined, they are both sorted by the join attribute. The tables are then scanned in parallel to find matching values. Each row is scanned once provided that there are no duplicates in the left table. This method is preferred for large tables.
+* Merge Join is similar to the MergeSort algorithm. Before the tables are joined, they are both sorted by the join attribute. The tables are then scanned in parallel to find matching values. Each row is scanned once provided that there are no duplicates in the left table. This method is preferred for large tables.
 ```sql
 EXPLAIN SELECT t2.name FROM t1 JOIN t2 ON (t1.id = t2.id);
                         QUERY PLAN
